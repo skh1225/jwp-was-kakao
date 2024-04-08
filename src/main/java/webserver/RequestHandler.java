@@ -39,9 +39,11 @@ public class RequestHandler implements Runnable {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 			List<String> header = getRequestHeader(br);
+			String path =  parsePath(header.get(0));
 
-			byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + parsePath(header.get(0)));
-			response200Header(dos, body.length);
+			byte[] body = FileIoUtils.loadFileFromClasspath(path);
+
+			response200Header(dos, body.length, path);
 			responseBody(dos, body);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -65,10 +67,15 @@ public class RequestHandler implements Runnable {
 
 	public String parsePath(String firstLine) {
 		String[] result = firstLine.split(" ");
-		return result[1];
+
+		if (result[1].equals("/index.html") || result[1].equals("/favicon.ico")) {
+			return "./templates" + result[1];
+		} else {
+			return "./static" + result[1];
+		}
 	}
 
-	private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+	private void responseIndex200Header(DataOutputStream dos, int lengthOfBodyContent) {
 		try {
 			dos.writeBytes("HTTP/1.1 200 OK \r\n");
 			dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
@@ -77,6 +84,25 @@ public class RequestHandler implements Runnable {
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
+	}
+
+	private void responseCss200Header(DataOutputStream dos, int lengthOfBodyContent) {
+		try {
+			dos.writeBytes("HTTP/1.1 200 OK \r\n");
+			dos.writeBytes("Content-Type: text/css\r\n");
+			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+			dos.writeBytes("\r\n");
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
+	}
+
+	private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String path) {
+		if (path.equals("./templates/index.html")) {
+			responseIndex200Header(dos, lengthOfBodyContent);
+			return;
+		}
+		responseCss200Header(dos, lengthOfBodyContent);
 	}
 
 	private void responseBody(DataOutputStream dos, byte[] body) {
