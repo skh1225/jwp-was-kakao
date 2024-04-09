@@ -1,7 +1,5 @@
 package webserver;
 
-import static org.springframework.http.server.PathContainer.*;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -10,14 +8,21 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.checkerframework.checker.units.qual.A;
+import javax.xml.crypto.Data;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
+import db.DataBase;
+import model.User;
 import utils.FileIoUtils;
 
 public class RequestHandler implements Runnable {
@@ -38,13 +43,16 @@ public class RequestHandler implements Runnable {
 			DataOutputStream dos = new DataOutputStream(out);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-			List<String> header = getRequestHeader(br);
-			String path =  parsePath(header.get(0));
+			HttpRequest httpRequest = HttpRequest.from(br);
 
-			byte[] body = FileIoUtils.loadFileFromClasspath(path);
+			byte[] body = httpRequest.getBody();
+			if (httpRequest.getPath().equals("/user/create")) {
+				User user = createUser(httpRequest.getQueryParameters());
+				DataBase.addUser(user);
+				logger.info(DataBase.findAll().toString());
+			}
 
-			response200Header(dos, body.length, path);
-			responseBody(dos, body);
+			HttpResponse.response(dos, body, HttpStatus.OK.toString(), httpRequest.getContentType());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		} catch (URISyntaxException e) {
@@ -52,65 +60,7 @@ public class RequestHandler implements Runnable {
 		}
 	}
 
-	private List<String> getRequestHeader(BufferedReader br) throws IOException {
-		List<String> header = new ArrayList<>();
-
-		String line = br.readLine();
-		while (!"".equals(line) && line != null) {
-			header.add(line);
-			line = br.readLine();
-		}
-
-		return header;
-	}
-
-
-	public String parsePath(String firstLine) {
-		String[] result = firstLine.split(" ");
-
-		if (result[1].equals("/index.html") || result[1].equals("/favicon.ico")) {
-			return "./templates" + result[1];
-		} else {
-			return "./static" + result[1];
-		}
-	}
-
-	private void responseIndex200Header(DataOutputStream dos, int lengthOfBodyContent) {
-		try {
-			dos.writeBytes("HTTP/1.1 200 OK \r\n");
-			dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
-			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-			dos.writeBytes("\r\n");
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-	}
-
-	private void responseCss200Header(DataOutputStream dos, int lengthOfBodyContent) {
-		try {
-			dos.writeBytes("HTTP/1.1 200 OK \r\n");
-			dos.writeBytes("Content-Type: text/css\r\n");
-			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
-			dos.writeBytes("\r\n");
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-	}
-
-	private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String path) {
-		if (path.equals("./templates/index.html")) {
-			responseIndex200Header(dos, lengthOfBodyContent);
-			return;
-		}
-		responseCss200Header(dos, lengthOfBodyContent);
-	}
-
-	private void responseBody(DataOutputStream dos, byte[] body) {
-		try {
-			dos.write(body, 0, body.length);
-			dos.flush();
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
+	private User createUser(Map<String, String> userInfo) {
+		return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
 	}
 }
