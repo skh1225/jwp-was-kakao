@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 public class HttpResponse {
 
@@ -17,6 +18,17 @@ public class HttpResponse {
 			dos.writeBytes(String.format("Content-Length: %d\r\n", body.length));
 			dos.writeBytes("\r\n");
 			dos.write(body, 0, body.length);
+			dos.flush();
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage());
+		}
+	}
+
+	public static void http302Response(DataOutputStream dos, String location) {
+		try {
+			dos.writeBytes(String.format("HTTP/1.1 %s \r\n", HttpStatus.FOUND.toString()));
+			dos.writeBytes(String.format("Location: %s\r\n", location));
+			dos.writeBytes("\r\n");
 			dos.flush();
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());

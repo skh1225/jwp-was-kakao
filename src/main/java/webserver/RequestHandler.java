@@ -51,10 +51,15 @@ public class RequestHandler implements Runnable {
 			}
 
 			if (httpRequest.getMethod().equals("POST") && httpRequest.getPath().equals("/user/create")) {
-				User user = createUser(httpRequest.getQueryParameters());
-				DataBase.addUser(user);
-				logger.info(DataBase.findAll().toString());
-				HttpResponse.response(dos, body, HttpStatus.OK.toString(), httpRequest.getContentType());
+				try {
+					User user = createUser(httpRequest.getQueryParameters());
+					DataBase.addUser(user);
+					logger.info(DataBase.findAll().toString());
+					HttpResponse.http302Response(dos, "/index.html");
+				} catch (IllegalArgumentException exception) {
+					logger.error(exception.toString());
+					HttpResponse.http302Response(dos, "/user/form.html");
+				}
 			}
 
 			HttpResponse.response(dos, body, HttpStatus.BAD_REQUEST.toString(), httpRequest.getContentType());
@@ -66,6 +71,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	private User createUser(Map<String, String> userInfo) {
+
 		return new User(userInfo.get("userId"), userInfo.get("password"), userInfo.get("name"), userInfo.get("email"));
 	}
 }

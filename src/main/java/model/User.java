@@ -2,6 +2,8 @@ package model;
 
 import java.util.Objects;
 
+import db.DataBase;
+
 public class User {
     private String userId;
     private String password;
@@ -9,6 +11,7 @@ public class User {
     private String email;
 
     public User(String userId, String password, String name, String email) {
+        valdateUserInfo(userId);
         this.userId = userId;
         this.password = password;
         this.name = name;
@@ -29,6 +32,12 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public void valdateUserInfo(String userId) {
+        if (DataBase.findUserById(userId) != null) {
+            throw new IllegalArgumentException("기존에 존재하는 user ID 입니다.");
+        }
     }
 
     @Override
