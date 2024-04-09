@@ -19,5 +19,5 @@
   - User객체를 RAM 메모리에 저장
 - [x] Post 방식으로 회원가입
   - GET 방식을 POST 방식으로 전환
-- [ ] Redirect
+- [x] Redirect
   - 회원가입 이후 redirect 방식으로 index.html으로 이동하기
