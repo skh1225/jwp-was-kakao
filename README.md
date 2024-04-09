@@ -17,7 +17,7 @@
 - [x] Query String 파싱
   - Query String에서 회원가입 정보 파싱하기
   - User객체를 RAM 메모리에 저장
-- [ ] Post 방식으로 회원가입
+- [x] Post 방식으로 회원가입
   - GET 방식을 POST 방식으로 전환
 - [ ] Redirect
   - 회원가입 이후 redirect 방식으로 index.html으로 이동하기

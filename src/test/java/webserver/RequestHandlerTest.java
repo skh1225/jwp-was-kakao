@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.catalina.connector.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,6 +19,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -43,7 +46,7 @@ public class RequestHandlerTest {
 	}
 
 	@Test
-	void 유저_생성_테스트() {
+	void GET_유저_생성_테스트() {
 		RestTemplate restTemplate = new RestTemplate();
 		String name = "name";
 		String userId = "userId";
@@ -52,13 +55,37 @@ public class RequestHandlerTest {
 		User user = new User(userId, password, name, email);
 
 		UriComponentsBuilder builder = UriComponentsBuilder.newInstance()
+			.scheme("http")
+			.host("localhost")
+			.port("8080")
+			.path("/user/create")
 			.queryParam("name", name)
 			.queryParam("userId", userId)
 			.queryParam("password", password)
-			.queryParam("email", email).host("localhost").path("/user/create").port("8080").scheme("http");
+			.queryParam("email", email);
 
 
 		ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	void POST_유저_생성_테스트() {
+		RestTemplate restTemplate = new RestTemplate();
+		String name = "name";
+		String userId = "userId";
+		String password = "password";
+		String email = "email@email.com";
+		User user = new User(userId, password, name, email);
+
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+		parameters.add("name", name);
+		parameters.add("userId", userId);
+		parameters.add("password", password);
+		parameters.add("email", email);
+
+		ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8080/user/create", parameters, String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -71,11 +98,9 @@ public class RequestHandlerTest {
 		expectedQueryParams.put("password", "password");
 		expectedQueryParams.put("email", "email@email.com");
 
-		String[] requestUrl = new String[2];
-		requestUrl[0] = "/user/create";
-		requestUrl[1] = "userId=id&name=name&password=password&email=email@email.com";
+		String parameters = "userId=id&name=name&password=password&email=email@email.com";
 
-		Map<String, String> queryParams = HttpRequest.extractQueryParameters(requestUrl);
+		Map<String, String> queryParams = HttpRequest.extractQueryParameters(parameters);
 
 		assertThat(queryParams).isEqualTo(expectedQueryParams);
 	}
@@ -83,7 +108,7 @@ public class RequestHandlerTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"html", "css"})
 	void 요청에대한_파일타입_반환_테스트(String fileType) {
-		HttpRequest httpRequest = new HttpRequest("GET", String.format("file.%s", fileType), new HashMap<String, String>());
+		HttpRequest httpRequest = new HttpRequest("GET", String.format("file.%s", fileType), new HashMap<String, String>(), new HashMap<String, String>());
 		
 		assertThat(httpRequest.getFileType()).isEqualTo(fileType);
 	}

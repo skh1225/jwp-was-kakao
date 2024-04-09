@@ -46,13 +46,18 @@ public class RequestHandler implements Runnable {
 			HttpRequest httpRequest = HttpRequest.from(br);
 
 			byte[] body = httpRequest.getBody();
-			if (httpRequest.getPath().equals("/user/create")) {
+			if (httpRequest.getMethod().equals("GET") && httpRequest.isFile()) {
+				HttpResponse.response(dos, body, HttpStatus.OK.toString(), httpRequest.getContentType());
+			}
+
+			if (httpRequest.getMethod().equals("POST") && httpRequest.getPath().equals("/user/create")) {
 				User user = createUser(httpRequest.getQueryParameters());
 				DataBase.addUser(user);
 				logger.info(DataBase.findAll().toString());
+				HttpResponse.response(dos, body, HttpStatus.OK.toString(), httpRequest.getContentType());
 			}
 
-			HttpResponse.response(dos, body, HttpStatus.OK.toString(), httpRequest.getContentType());
+			HttpResponse.response(dos, body, HttpStatus.BAD_REQUEST.toString(), httpRequest.getContentType());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		} catch (URISyntaxException e) {

@@ -9,50 +9,67 @@ import java.util.List;
 import java.util.Map;
 
 import utils.FileIoUtils;
+import utils.IOUtils;
 
 public class HttpRequest {
 
 	private final String method;
 	private final String path;
 	private final Map<String, String> queryParameters;
+	private final Map<String, String> header;
 
-	public HttpRequest(String method, String path, Map<String, String> queryParameters) {
+	public HttpRequest(String method, String path, Map<String, String> queryParameters, Map<String, String> header) {
 		this.method = method;
 		this.path = path;
 		this.queryParameters = queryParameters;
+		this.header = header;
 	}
 
 	public static HttpRequest from(BufferedReader br) throws IOException {
-		List<String> header = getRequestHeader(br);
+		Map<String, String> header = getRequestHeader(br);
 
-		String method = header.get(0).split(" ")[0];
-		String[] requestUrl = header.get(0).split(" ")[1].split("\\?");
+		String method = header.get("RequestLine").split(" ")[0];
 
-		if (requestUrl.length > 1) {
-			Map<String, String> queryParameters = extractQueryParameters(requestUrl);
+		String[] requestUrl = header.get("RequestLine").split(" ")[1].split("\\?");
 
-			return new HttpRequest(method, requestUrl[0], queryParameters);
+		if (method.equals("GET")) {
+
+			if (requestUrl.length > 1) {
+				Map<String, String> queryParameters = extractQueryParameters(requestUrl[1]);
+
+				return new HttpRequest(method, requestUrl[0], queryParameters, header);
+			}
 		}
 
-		return new HttpRequest(method, requestUrl[0], new HashMap<>());
+		if (method.equals("POST")) {
+			String parameters = IOUtils.readData(br, Integer.parseInt(header.get("Content-Length")));
+			Map<String, String> queryParameters = extractQueryParameters(parameters);
+			return new HttpRequest(method, requestUrl[0], queryParameters, header);
+		}
+
+		return new HttpRequest(method, requestUrl[0], new HashMap<>(), header);
 	}
 
-	public static Map<String, String> extractQueryParameters(String[] requestUrl) {
+	public static Map<String, String> extractQueryParameters(String parameters) {
 		Map<String, String> queryParameters = new HashMap<>();
 
-		for (String queryParameter : requestUrl[1].split("&")) {
+		for (String queryParameter : parameters.split("&")) {
 			String[] splitedQueryParameter = queryParameter.split("=");
 			queryParameters.put(splitedQueryParameter[0], splitedQueryParameter[1]);
 		}
 		return queryParameters;
 	}
 
-	private static List<String> getRequestHeader(BufferedReader br) throws IOException {
-		List<String> header = new ArrayList<>();
+	private static Map<String, String> getRequestHeader(BufferedReader br) throws IOException {
+		Map<String, String> header = new HashMap<String, String>();
 
 		String line = br.readLine();
+		header.put("RequestLine", line);
+
+		line = br.readLine();
 		while (!"".equals(line) && line != null) {
-			header.add(line);
+			String[] splitedLine = line.split(": ");
+			header.put(splitedLine[0], splitedLine[1]);
 			line = br.readLine();
 		}
 
@@ -74,7 +91,7 @@ public class HttpRequest {
 	}
 
 	public byte[] getBody() throws IOException, URISyntaxException {
-		if (getFileType().equals("html") || getFileType().equals("css") || getFileType().equals("ico")) {
+		if (isFile()) {
 			return FileIoUtils.loadFileFromClasspath(getPath());
  		}
 
@@ -91,5 +108,14 @@ public class HttpRequest {
 
 	public Map<String, String> getQueryParameters() {
 		return queryParameters;
+	}
+
+	public String getMethod() {
+		return this.method;
+	}
+
+	public boolean isFile() {
+		String fileType = getFileType();
+		return (fileType.equals("html") || fileType.equals("css") || fileType.equals("ico"));
 	}
 }
