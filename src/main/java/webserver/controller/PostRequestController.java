@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 
 public class PostRequestController {
-	public static void run(HttpRequest httpRequest, DataOutputStream dos, Logger logger) throws IOException, URISyntaxException {
+	public static void run(HttpRequest httpRequest, DataOutputStream dos, Logger logger) throws
+		IOException,
+		URISyntaxException {
 		if (httpRequest.getPath().equals("/user/create")) {
 			createUserAndResponse(httpRequest, dos, logger);
 			return;

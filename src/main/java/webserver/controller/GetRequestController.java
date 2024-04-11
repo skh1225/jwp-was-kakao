@@ -11,7 +11,9 @@ import webserver.HttpRequest;
 import webserver.HttpResponse;
 
 public class GetRequestController {
-	public static void run(HttpRequest httpRequest, DataOutputStream dos, Logger logger) throws IOException, URISyntaxException {
+	public static void run(HttpRequest httpRequest, DataOutputStream dos, Logger logger) throws
+		IOException,
+		URISyntaxException {
 		if (httpRequest.getPath().isEmpty() || httpRequest.getPath().equals("/")) {
 			HttpResponse.http302Response(dos, "/index.html");
 			return;

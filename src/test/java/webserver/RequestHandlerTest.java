@@ -24,6 +24,7 @@ import model.User;
 public class RequestHandlerTest {
 
 	private static Thread server;
+
 	@BeforeAll
 	static void runServer() {
 		server = new Thread(() ->
@@ -65,7 +66,8 @@ public class RequestHandlerTest {
 		parameters.add("password", password);
 		parameters.add("email", email);
 
-		ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8080/user/create", parameters, String.class);
+		ResponseEntity<String> response = restTemplate.postForEntity("http://localhost:8080/user/create", parameters,
+			String.class);
 
 		assertAll(
 			() -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND),
@@ -91,7 +93,8 @@ public class RequestHandlerTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"html", "css"})
 	void 요청에대한_파일타입_반환_테스트(String fileType) {
-		HttpRequest httpRequest = new HttpRequest("GET", String.format("file.%s", fileType), new HashMap<String, String>(), new HashMap<String, String>());
+		HttpRequest httpRequest = new HttpRequest("GET", String.format("file.%s", fileType),
+			new HashMap<String, String>(), new HashMap<String, String>());
 
 		assertThat(httpRequest.getFileType()).isEqualTo(fileType);
 	}

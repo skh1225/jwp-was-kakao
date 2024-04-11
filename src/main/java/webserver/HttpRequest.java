@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,7 @@ public class HttpRequest {
 
 	public static Map<String, String> extractQueryParameters(String parameters) throws UnsupportedEncodingException {
 		Map<String, String> queryParameters = new HashMap<>();
-		parameters = URLDecoder.decode(parameters, "UTF-8");
+		parameters = URLDecoder.decode(parameters, StandardCharsets.UTF_8);
 
 		for (String queryParameter : parameters.split("&")) {
 			String[] splitedQueryParameter = queryParameter.split("=");
@@ -96,7 +97,7 @@ public class HttpRequest {
 	public byte[] getBody() throws IOException, URISyntaxException {
 		if (isFile()) {
 			return FileIoUtils.loadFileFromClasspath(getPath());
- 		}
+		}
 
 		return new byte[0];
 	}

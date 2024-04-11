@@ -26,7 +26,7 @@ public class HttpResponse {
 
 	public static void http302Response(DataOutputStream dos, String location) {
 		try {
-			dos.writeBytes(String.format("HTTP/1.1 %s \r\n", HttpStatus.FOUND.toString()));
+			dos.writeBytes(String.format("HTTP/1.1 %s \r\n", HttpStatus.FOUND));
 			dos.writeBytes(String.format("Location: %s\r\n", location));
 			dos.writeBytes("\r\n");
 			dos.flush();
