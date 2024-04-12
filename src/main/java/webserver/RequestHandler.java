@@ -12,11 +12,12 @@ import java.net.URISyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import webserver.controller.GetRequestController;
-import webserver.controller.PostRequestController;
+import webserver.controller.Controller;
+import webserver.request.HttpRequest;
+import webserver.response.HttpResponse;
 
 public class RequestHandler implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
 
 	private final Socket connection;
 
@@ -25,25 +26,21 @@ public class RequestHandler implements Runnable {
 	}
 
 	public void run() {
-		logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
+		LOGGER.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
 			connection.getPort());
 
 		try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 			// TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
-			DataOutputStream dos = new DataOutputStream(out);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			DataOutputStream dos = new DataOutputStream(out);
 
-			HttpRequest httpRequest = HttpRequest.from(br);
+			HttpRequest httpRequest = new HttpRequest(br);
+			HttpResponse httpResponse = new HttpResponse(dos);
 
-			if (httpRequest.getMethod().equals("GET")) {
-				GetRequestController.run(httpRequest, dos, logger);
-			}
-
-			if (httpRequest.getMethod().equals("POST")) {
-				PostRequestController.run(httpRequest, dos, logger);
-			}
+			Controller controller = RequestMappingHandler.getController(httpRequest.getRequestLine().getPath());
+			controller.service(httpRequest, httpResponse);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			LOGGER.error(e.getMessage());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}

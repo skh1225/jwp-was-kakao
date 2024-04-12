@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import db.DataBase;
 import model.User;
+import webserver.request.HttpRequest;
 
 public class RequestHandlerTest {
 
@@ -73,29 +74,5 @@ public class RequestHandlerTest {
 			() -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND),
 			() -> assertThat(DataBase.findUserById(userId)).isEqualTo(user)
 		);
-	}
-
-	@Test
-	void 쿼리_파라미터_분리_테스트() throws UnsupportedEncodingException {
-		Map<String, String> expectedQueryParams = new HashMap<>();
-		expectedQueryParams.put("userId", "id");
-		expectedQueryParams.put("name", "name");
-		expectedQueryParams.put("password", "password");
-		expectedQueryParams.put("email", "email@email.com");
-
-		String parameters = "userId=id&name=name&password=password&email=email@email.com";
-
-		Map<String, String> queryParams = HttpRequest.extractQueryParameters(parameters);
-
-		assertThat(queryParams).isEqualTo(expectedQueryParams);
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = {"html", "css"})
-	void 요청에대한_파일타입_반환_테스트(String fileType) {
-		HttpRequest httpRequest = new HttpRequest("GET", String.format("file.%s", fileType),
-			new HashMap<String, String>(), new HashMap<String, String>());
-
-		assertThat(httpRequest.getFileType()).isEqualTo(fileType);
 	}
 }
