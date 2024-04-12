@@ -2,8 +2,6 @@ package model;
 
 import java.util.Objects;
 
-import db.DataBase;
-
 public class User {
 	private final String userId;
 	private final String password;

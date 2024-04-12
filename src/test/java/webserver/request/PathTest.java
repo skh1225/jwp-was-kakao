@@ -13,7 +13,8 @@ public class PathTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({"/index.html, ./templates/index.html", "/favicon.ico, ./templates/favicon.ico", "/css/style.css, ./static/css/style.css"})
+	@CsvSource({"/index.html, ./templates/index.html", "/favicon.ico, ./templates/favicon.ico",
+		"/css/style.css, ./static/css/style.css"})
 	void 경로에대해_적절한_파일경로를_반환한다(String path, String filePath) {
 
 		assertThat(new Path(path).getFilePath()).isEqualTo(filePath);
