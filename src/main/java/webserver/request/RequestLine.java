@@ -16,7 +16,6 @@ public class RequestLine {
 	private static final int PROTOCOL_LOCATION = 2;
 	private static final int PATH_LOCATION = 0;
 	private static final int PARAMETER_LOCATION = 1;
-	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
 
 	private final Method method;
 	private final Protocol protocol;

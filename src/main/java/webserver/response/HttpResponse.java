@@ -11,7 +11,7 @@ import webserver.RequestHandler;
 
 public class HttpResponse {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HttpResponse.class);
 
 	private final DataOutputStream dataOutputStream;
 
