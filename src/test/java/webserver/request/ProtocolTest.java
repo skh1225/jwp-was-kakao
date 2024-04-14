@@ -14,6 +14,10 @@ public class ProtocolTest {
 			() -> assertThat(protocol.getProtocol()).isEqualTo("HTTP"),
 			() -> assertThat(protocol.getVersion()).isEqualTo("1.1")
 		);
+	}
 
+	@Test
+	void 유효하지_않은_프로토콜을_생성하려고하면_예외를_던진다() {
+		assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Protocol.from("HTTP/5"));
 	}
 }
