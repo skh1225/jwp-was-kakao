@@ -3,6 +3,7 @@ package webserver.request;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
 import utils.FileIoUtils;
@@ -13,14 +14,17 @@ public class HttpRequest {
 	private final RequestLine requestLine;
 	private final RequestHeader requestHeader;
 	private final RequestParameters requestParameters;
+	private final RequestParameters requestBody;
 
 	public HttpRequest(BufferedReader bufferedReader) throws IOException {
 		String firstLine = bufferedReader.readLine();
 		this.requestLine = RequestLine.from(firstLine);
 		this.requestHeader = RequestHeader.from(bufferedReader);
 		this.requestParameters = this.requestLine.getRequestParameters();
+		this.requestBody = new RequestParameters(new HashMap<>());
+
 		if (this.requestHeader.getContentLength() > 0) {
-			this.requestParameters.add(IOUtils.readData(bufferedReader, this.requestHeader.getContentLength()));
+			this.requestBody.add(RequestParameters.extractParameters(IOUtils.readData(bufferedReader, this.requestHeader.getContentLength())));
 		}
 	}
 
@@ -32,15 +36,15 @@ public class HttpRequest {
 		return requestLine.getMethod();
 	}
 
-	public Map<String, String> getRequestParameters() {
-		return requestParameters.getParameters();
+	public RequestParameters getRequestParameters() {
+		return requestParameters;
+	}
+
+	public RequestParameters getRequestBody() {
+		return requestBody;
 	}
 
 	public RequestLine getRequestLine() {
 		return requestLine;
-	}
-
-	public RequestHeader getRequestHeader() {
-		return requestHeader;
 	}
 }

@@ -22,20 +22,27 @@ public class RequestParameters {
 
 	public static RequestParameters from(String queryParameters) {
 		RequestParameters requestParameters = new RequestParameters(new HashMap<>());
-		requestParameters.add(queryParameters);
+		requestParameters.add(extractParameters(queryParameters));
 
 		return requestParameters;
 	}
 
-	public RequestParameters add(String queryParameters) {
-		queryParameters = URLDecoder.decode(queryParameters, StandardCharsets.UTF_8);
+	public RequestParameters add(Map<String, String> queryParameters) {
+		parameters.putAll(queryParameters);
 
-		for (String queryParameter : queryParameters.split(PARAMETER_DELIMETER)) {
+		return new RequestParameters(parameters);
+	}
+
+	public static Map<String, String> extractParameters(String queryParameters) {
+		String decodedQueryParameters = URLDecoder.decode(queryParameters, StandardCharsets.UTF_8);
+		Map<String, String> parameters = new HashMap<>();
+
+		for (String queryParameter : decodedQueryParameters.split(PARAMETER_DELIMETER)) {
 			String[] keyAndValue = queryParameter.split(KEY_VALUE_DELIMETER);
 			parameters.put(keyAndValue[KEY_LOCATION], keyAndValue[VALUE_LOCATION]);
 		}
 
-		return new RequestParameters(parameters);
+		return parameters;
 	}
 
 	public Map<String, String> getParameters() {

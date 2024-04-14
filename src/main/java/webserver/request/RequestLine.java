@@ -42,7 +42,7 @@ public class RequestLine {
 		RequestParameters requestParameters = new RequestParameters(new HashMap<>());
 
 		if (pathAndParameters.length > 1) {
-			requestParameters.add(pathAndParameters[PARAMETER_LOCATION]);
+			requestParameters.add(RequestParameters.extractParameters(pathAndParameters[PARAMETER_LOCATION]));
 		}
 
 		return new RequestLine(method, protocol, path, requestParameters);

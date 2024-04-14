@@ -5,13 +5,15 @@ import java.util.Map;
 import db.DataBase;
 import model.User;
 import webserver.request.HttpRequest;
+import webserver.request.RequestParameters;
 import webserver.response.HttpResponse;
 
 public class CreateUserController extends Controller {
 	@Override
 	public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
 		try {
-			User user = createUser(httpRequest.getRequestParameters());
+			RequestParameters parameters = httpRequest.getRequestParameters().add(httpRequest.getRequestBody().getParameters());
+			User user = createUser(parameters.getParameters());
 			validateDuplicateUser(user.getUserId());
 			DataBase.addUser(user);
 			httpResponse.redirect("/index.html");
