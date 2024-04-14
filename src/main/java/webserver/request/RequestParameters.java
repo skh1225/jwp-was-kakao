@@ -20,10 +20,10 @@ public class RequestParameters {
 	}
 
 	public static RequestParameters from(String queryParameters) {
-		queryParameters = URLDecoder.decode(queryParameters, StandardCharsets.UTF_8);
+		String decodedQueryParameters = URLDecoder.decode(queryParameters, StandardCharsets.UTF_8);
 		Map<String, String> parameters = new HashMap<>();
 
-		for (String queryParameter : queryParameters.split(PARAMETER_DELIMETER)) {
+		for (String queryParameter : decodedQueryParameters.split(PARAMETER_DELIMETER)) {
 			String[] keyAndValue = queryParameter.split(KEY_VALUE_DELIMETER);
 			parameters.put(keyAndValue[KEY_LOCATION], keyAndValue[VALUE_LOCATION]);
 		}
