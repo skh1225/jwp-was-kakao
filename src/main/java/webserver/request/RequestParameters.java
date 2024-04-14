@@ -19,16 +19,12 @@ public class RequestParameters {
 		this.parameters = parameters;
 	}
 
+
 	public static RequestParameters from(String queryParameters) {
-		String decodedQueryParameters = URLDecoder.decode(queryParameters, StandardCharsets.UTF_8);
-		Map<String, String> parameters = new HashMap<>();
+		RequestParameters requestParameters = new RequestParameters(new HashMap<>());
+		requestParameters.add(queryParameters);
 
-		for (String queryParameter : decodedQueryParameters.split(PARAMETER_DELIMETER)) {
-			String[] keyAndValue = queryParameter.split(KEY_VALUE_DELIMETER);
-			parameters.put(keyAndValue[KEY_LOCATION], keyAndValue[VALUE_LOCATION]);
-		}
-
-		return new RequestParameters(parameters);
+		return requestParameters;
 	}
 
 	public RequestParameters add(String queryParameters) {
