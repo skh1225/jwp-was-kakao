@@ -7,6 +7,7 @@ import model.User;
 import webserver.request.HttpRequest;
 import webserver.request.RequestParameters;
 import webserver.response.HttpResponse;
+import webserver.response.ResponseHeader;
 
 public class CreateUserController extends Controller {
 	@Override
@@ -16,9 +17,11 @@ public class CreateUserController extends Controller {
 			User user = createUser(parameters.getParameters());
 			validateDuplicateUser(user.getUserId());
 			DataBase.addUser(user);
-			httpResponse.redirect("/index.html");
+			ResponseHeader responseHeader = ResponseHeader.create302Header("/index.html");
+			httpResponse.response(responseHeader, new byte[0]);
 		} catch (IllegalArgumentException exception) {
-			httpResponse.redirect("/user/form.html");
+			ResponseHeader responseHeader = ResponseHeader.create302Header("/user/form.html");
+			httpResponse.response(responseHeader, new byte[0]);
 		}
 	}
 
