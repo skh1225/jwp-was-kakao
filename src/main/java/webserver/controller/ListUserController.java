@@ -29,7 +29,7 @@ public class ListUserController extends Controller {
 		if (httpRequest.getRequestHeader().isLogined()) {
 			LOGGER.debug("로그인이 확인되었습니다.");
 			byte[] body = getUsersTemplates();
-			ResponseHeader responseHeader = ResponseHeader.create200Header(ContentType.HTML, body.length);
+			ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
 
 			httpResponse.response(responseHeader, body);
 			return;

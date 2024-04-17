@@ -19,15 +19,9 @@ public class ResourceController extends Controller {
 			httpResponse.response(responseHeader, new byte[0]);
 			return;
 		}
-		try {
-			byte[] body = httpRequest.createResponseBody();
-			ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
+		byte[] body = httpRequest.createResponseBody();
+		ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
 
-			httpResponse.response(responseHeader, body);
-		} catch (Exception exception) {
-			byte[] body = httpRequest.createResponseBody();
-			ResponseHeader responseHeader = ResponseHeader.create400Header();
-			httpResponse.response(responseHeader, body);
-		}
+		httpResponse.response(responseHeader, body);
 	}
 }
