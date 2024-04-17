@@ -23,9 +23,9 @@ public class LoginUserController extends Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginUserController.class);
 	@Override
 	public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
-		Map<String, String> parameters = httpRequest.getRequestParameters().add(httpRequest.getRequestBody().getParameters()).getParameters();
-		String userId = parameters.getOrDefault("userId", "");
-		String password = parameters.getOrDefault("password", "");
+		Map<String, String> parameters = httpRequest.getRequestBody().getParameters();
+		String userId = parameters.get("userId");
+		String password = parameters.get("password");
 		User user = DataBase.findUserById(userId);
 
 		if (user != null && user.getPassword().equals(password)) {

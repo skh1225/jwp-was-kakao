@@ -13,7 +13,7 @@ public class CreateUserController extends Controller {
 	@Override
 	public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
 		try {
-			RequestParameters parameters = httpRequest.getRequestParameters().add(httpRequest.getRequestBody().getParameters());
+			RequestParameters parameters = httpRequest.getRequestBody();
 			User user = createUser(parameters.getParameters());
 			validateDuplicateUser(user.getUserId());
 			DataBase.addUser(user);

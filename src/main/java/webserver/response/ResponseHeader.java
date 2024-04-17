@@ -28,11 +28,6 @@ public class ResponseHeader {
 		return new ResponseHeader(HttpStatus.FOUND, header);
 	}
 
-	public static ResponseHeader create400Header() {
-		Map<String, String> header = new HashMap<>();
-		return new ResponseHeader(HttpStatus.BAD_REQUEST, header);
-	}
-
 	public void addHeader(String key, String value) {
 		this.headers.put(key, value);
 	}
