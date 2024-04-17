@@ -23,6 +23,15 @@ import webserver.response.ResponseHeader;
 
 public class ListUserController extends Controller {
 	private static final Logger LOGGER = LoggerFactory.getLogger(webserver.controller.LoginUserController.class);
+	private static final Handlebars HANDLEBARS;
+
+	static {
+		TemplateLoader loader = new ClassPathTemplateLoader();
+		loader.setPrefix("/templates");
+		loader.setSuffix(".html");
+
+		HANDLEBARS = new Handlebars(loader);
+	}
 
 	@Override
 	public void doGet(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
@@ -43,12 +52,8 @@ public class ListUserController extends Controller {
 		Map<String, Object> parameterMap = new HashMap<>();
 		parameterMap.put("users", DataBase.findAll());
 
-		TemplateLoader loader = new ClassPathTemplateLoader();
-		loader.setPrefix("/templates");
-		loader.setSuffix(".html");
 
-		Handlebars handlebars = new Handlebars(loader);
-		Template template = handlebars.compile("/user/list");
+		Template template = HANDLEBARS.compile("/user/list");
 		return template.apply(parameterMap).getBytes();
 	}
 }
