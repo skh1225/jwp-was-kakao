@@ -18,4 +18,6 @@ public class SessionManager {
 	public static void remove(final String id) {
 		SESSIONS.remove(id);
 	}
+
+	private SessionManager() {}
 }
