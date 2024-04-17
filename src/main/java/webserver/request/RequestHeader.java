@@ -16,9 +16,11 @@ public class RequestHeader {
 	private static final String COOKIE = "Cookie";
 
 	private Map<String, String> headers;
+	private HttpCookie httpCookie;
 
-	private RequestHeader(Map<String, String> headers) {
+	private RequestHeader(Map<String, String> headers, HttpCookie httpCookie) {
 		this.headers = headers;
+		this.httpCookie = httpCookie;
 	}
 
 	public static RequestHeader from(BufferedReader bufferedReader) throws IOException {
@@ -32,8 +34,10 @@ public class RequestHeader {
 				break;
 			}
 		}
-
-		return new RequestHeader(headers);
+		if (headers.containsKey(COOKIE)) {
+			return new RequestHeader(headers, HttpCookie.from(headers.get(COOKIE)));
+		}
+		return new RequestHeader(headers, new HttpCookie(new HashMap<>()));
 	}
 
 	public int getContentLength() {
@@ -44,20 +48,14 @@ public class RequestHeader {
 	}
 
 	public String getJsessionId() {
-		return HttpCookie.from(headers.get(COOKIE)).getJsessionid();
+		return httpCookie.getJsessionid();
 	}
 
 	public boolean jsessionIdExists() {
-		if (!headers.containsKey(COOKIE)) {
-			return false;
-		}
-		return HttpCookie.from(headers.get(COOKIE)).jesessionIdExists();
+		return httpCookie.jesessionIdExists();
 	}
 
 	public boolean isLogined() {
-		if (!headers.containsKey(COOKIE)) {
-			return false;
-		}
-		return HttpCookie.from(headers.get(COOKIE)).isLogined();
+		return httpCookie.isLogined();
 	}
 }
