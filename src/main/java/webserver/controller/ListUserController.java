@@ -19,6 +19,7 @@ import model.User;
 import webserver.request.HttpRequest;
 import webserver.response.ContentType;
 import webserver.response.HttpResponse;
+import webserver.response.HttpStatus;
 import webserver.response.ResponseHeader;
 
 public class ListUserController extends Controller {
@@ -40,12 +41,12 @@ public class ListUserController extends Controller {
 			byte[] body = getUsersTemplates();
 			ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
 
-			httpResponse.response(responseHeader, body);
+			httpResponse.response(HttpStatus.OK, responseHeader, body);
 			return;
 		}
 		LOGGER.debug("로그인을 해주세요.");
 		ResponseHeader responseHeader = ResponseHeader.create302Header("/user/login.html");
-		httpResponse.response(responseHeader, new byte[0]);
+		httpResponse.response(HttpStatus.FOUND, responseHeader, new byte[0]);
 	}
 
 	private byte[] getUsersTemplates() throws IOException {

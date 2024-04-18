@@ -4,14 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 
 public class ResponseHeader {
-	private final HttpStatus httpStatus;
 	private final Map<String, String> headers;
 
-	public ResponseHeader(HttpStatus httpStatus, Map<String, String> headers) {
-		this.httpStatus = httpStatus;
+	public ResponseHeader(Map<String, String> headers) {
 		this.headers = headers;
 	}
 
@@ -19,21 +16,17 @@ public class ResponseHeader {
 		Map<String, String> header = new HashMap<>();
 		header.put("Content-Type", contentType.toString());
 		header.put("Content-Length", Integer.toString(contentLength));
-		return new ResponseHeader(HttpStatus.OK, header);
+		return new ResponseHeader(header);
 	}
 
 	public static ResponseHeader create302Header(String location) {
 		Map<String, String> header = new HashMap<>();
 		header.put("Location", location);
-		return new ResponseHeader(HttpStatus.FOUND, header);
+		return new ResponseHeader(header);
 	}
 
 	public void addHeader(String key, String value) {
 		this.headers.put(key, value);
-	}
-
-	public HttpStatus getHttpStatus() {
-		return httpStatus;
 	}
 
 	public Map<String, String> getHeaders() {
