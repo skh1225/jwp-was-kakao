@@ -19,7 +19,6 @@ public class RequestParameters {
 		this.parameters = parameters;
 	}
 
-
 	public static RequestParameters from(String queryParameters) {
 		RequestParameters requestParameters = new RequestParameters(new HashMap<>());
 		requestParameters.add(extractParameters(queryParameters));

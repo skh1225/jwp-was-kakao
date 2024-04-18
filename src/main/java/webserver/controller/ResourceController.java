@@ -2,7 +2,6 @@ package webserver.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.UUID;
 
 import webserver.request.HttpRequest;
 import webserver.request.Protocol;
@@ -21,7 +20,8 @@ public class ResourceController extends Controller {
 			return;
 		}
 		byte[] body = httpRequest.createResponseBody();
-		ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
+		ResponseHeader responseHeader = ResponseHeader.create200Header(
+			httpRequest.getRequestLine().getPath().getContentType(), body.length);
 
 		httpResponse.response(new StatusLine(Protocol.HTTP_1_1, HttpStatus.OK), responseHeader, body);
 	}

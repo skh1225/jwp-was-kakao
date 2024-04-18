@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import webserver.session.SessionManager;
-
 public class RequestHeader {
 
 	private static final String KEY_VALUE_DELIMETER = ":";

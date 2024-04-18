@@ -18,6 +18,7 @@ import webserver.response.StatusLine;
 public class CreateUserController extends Controller {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CreateUserController.class);
+
 	@Override
 	public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
 		try {

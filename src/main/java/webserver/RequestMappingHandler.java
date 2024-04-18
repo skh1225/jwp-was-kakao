@@ -27,7 +27,8 @@ public class RequestMappingHandler {
 	}
 
 	public static Controller getController(Path path) {
-		if (path.isStatic() || path.isTemplate() && !path.equals(new Path(LOGIN_TEMPLATES_URL)) && !path.equals(new Path(LIST_TEMPLATES_URL))) {
+		if (path.isStatic() || path.isTemplate() && !path.equals(new Path(LOGIN_TEMPLATES_URL)) && !path.equals(
+			new Path(LIST_TEMPLATES_URL))) {
 			return new ResourceController();
 		}
 

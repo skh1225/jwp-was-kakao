@@ -19,5 +19,6 @@ public class SessionManager {
 		SESSIONS.remove(id);
 	}
 
-	private SessionManager() {}
+	private SessionManager() {
+	}
 }

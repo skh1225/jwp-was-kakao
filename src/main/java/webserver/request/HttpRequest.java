@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Map;
 
 import utils.FileIoUtils;
 import utils.IOUtils;
@@ -24,7 +23,8 @@ public class HttpRequest {
 		this.requestBody = new RequestParameters(new HashMap<>());
 
 		if (this.requestHeader.getContentLength() > 0) {
-			this.requestBody.add(RequestParameters.extractParameters(IOUtils.readData(bufferedReader, this.requestHeader.getContentLength())));
+			this.requestBody.add(RequestParameters.extractParameters(
+				IOUtils.readData(bufferedReader, this.requestHeader.getContentLength())));
 		}
 	}
 

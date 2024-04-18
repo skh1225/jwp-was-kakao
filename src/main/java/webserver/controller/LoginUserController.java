@@ -10,10 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import db.DataBase;
 import model.User;
-import webserver.WebApplicationServer;
 import webserver.request.HttpRequest;
 import webserver.request.Protocol;
-import webserver.request.RequestParameters;
 import webserver.response.HttpResponse;
 import webserver.response.HttpStatus;
 import webserver.response.ResponseHeader;
@@ -24,6 +22,7 @@ import webserver.session.SessionManager;
 public class LoginUserController extends Controller {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoginUserController.class);
+
 	@Override
 	public void doPost(HttpRequest httpRequest, HttpResponse httpResponse) {
 		Map<String, String> parameters = httpRequest.getRequestBody().getParameters();
@@ -47,7 +46,8 @@ public class LoginUserController extends Controller {
 	@Override
 	public void doGet(HttpRequest httpRequest, HttpResponse httpResponse) throws IOException, URISyntaxException {
 		byte[] body = httpRequest.createResponseBody();
-		ResponseHeader responseHeader = ResponseHeader.create200Header(httpRequest.getRequestLine().getPath().getContentType(), body.length);
+		ResponseHeader responseHeader = ResponseHeader.create200Header(
+			httpRequest.getRequestLine().getPath().getContentType(), body.length);
 
 		if (!httpRequest.getRequestHeader().jsessionIdExists()) {
 			UUID sessionId = UUID.randomUUID();
@@ -59,7 +59,7 @@ public class LoginUserController extends Controller {
 
 		if (SessionManager.findSession(httpRequest.getRequestHeader().getJsessionId()).getAttribute("user") != null) {
 			responseHeader = ResponseHeader.create302Header("/index.html");
-			httpResponse.response(new StatusLine(Protocol.HTTP_1_1, HttpStatus.FOUND),responseHeader, new byte[0]);
+			httpResponse.response(new StatusLine(Protocol.HTTP_1_1, HttpStatus.FOUND), responseHeader, new byte[0]);
 			return;
 		}
 
