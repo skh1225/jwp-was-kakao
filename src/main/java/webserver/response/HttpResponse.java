@@ -19,9 +19,9 @@ public class HttpResponse {
 		this.dataOutputStream = dataOutputStream;
 	}
 
-	public void response(HttpStatus httpStatus, ResponseHeader responseHeader, byte[] responseBody) {
+	public void response(StatusLine statusLine, ResponseHeader responseHeader, byte[] responseBody) {
 		try {
-			writeStatus(httpStatus);
+			writeStatus(statusLine);
 			writeHeader(responseHeader);
 			writeBody(responseBody);
 			writeEnd();
@@ -30,9 +30,9 @@ public class HttpResponse {
 		}
 	}
 
-	public void writeStatus(HttpStatus httpStatus) {
+	public void writeStatus(StatusLine statusLine) {
 		try {
-			dataOutputStream.writeBytes(String.format("HTTP/1.1 %s \r\n", httpStatus));
+			dataOutputStream.writeBytes(String.format("%s \r\n", statusLine));
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());
 		}
