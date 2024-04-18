@@ -1,42 +1,30 @@
 package webserver.request;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Arrays;
 
-public class Protocol {
-	private static final String PROTOCOL_DELIMETER = "/";
-	private static final int PROTOCOL_LOCATION = 0;
-	private static final int VERSION_LOCATION = 1;
+public enum Protocol {
+	HTTP_0_9("HTTP", "0.9"),
+	HTTP_1_0("HTTP", "1.0"),
+	HTTP_1_1("HTTP", "1.1"),
+	HTTP_2("HTTP", "2"),
+	HTTP_3("HTTP", "3");
 
 	private final String protocol;
 	private final String version;
 
-	private static final Map<String, Protocol> PROTOCOLS = new HashMap<>();
-
-	static {
-		PROTOCOLS.put("HTTP/0.9", new Protocol("HTTP", "0.9"));
-		PROTOCOLS.put("HTTP/1.0", new Protocol("HTTP", "1.0"));
-		PROTOCOLS.put("HTTP/1.1", new Protocol("HTTP", "1.1"));
-		PROTOCOLS.put("HTTP/2", new Protocol("HTTP", "2"));
-		PROTOCOLS.put("HTTP/3", new Protocol("HTTP", "3"));
-	}
-
-	private Protocol(String protocol, String version) {
+	Protocol(String protocol, String version) {
 		this.protocol = protocol;
 		this.version = version;
 	}
 
 	public static Protocol from(String protocol) {
-		Protocol cachedProtocol = PROTOCOLS.get(protocol);
-
-		if (cachedProtocol == null) {
-			throw new IllegalArgumentException("유효하지 않은 프로토콜입니다.");
-		}
-
-		return cachedProtocol;
+		String[] splitedProtocol = protocol.split("/");
+		return Arrays.stream(Protocol.values())
+			.filter(p -> p.getProtocol().equals(splitedProtocol[0]))
+			.filter(p -> p.getVersion().equals(splitedProtocol[1]))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 프로토콜 입니다."));
 	}
-
 
 	public String getProtocol() {
 		return protocol;
@@ -47,18 +35,7 @@ public class Protocol {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Protocol protocol1 = (Protocol)o;
-		return Objects.equals(protocol, protocol1.protocol) && Objects.equals(version,
-			protocol1.version);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(protocol, version);
+	public String toString() {
+		return this.protocol + "/" + this.version;
 	}
 }
